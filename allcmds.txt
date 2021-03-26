@@ -1,0 +1,251 @@
+-- SELECT
+SELECT
+
+SELECT * FROM users
+SELECT user_login FROM users
+
+LIMIT
+eg - SELECT * FROM users LIMIT 2 
+
+OFFSET - used for pagination
+eg - SELECT * FROM users LIMIT 2 OFFSET 5
+
+MULTIPLE COLUMS
+eg- SELECT user_login, user_pass FROM users LIMIT 2 OFFSET 5
+
+ORDER BY
+eg1 - SELECT * FROM users ORDER BY user_email
+
+eg2 - SELECT * FROM users  
+ORDER BY `users`.`user_email`  DESC 
+# for descending order
+
+
+____________________________________
+using products.sql
+
+WHERE
+SELECT * FROM `products` WHERE price = 11.99
+SELECT * FROM products WHERE book_name =  "WILD"
+SELECT * FROM products WHERE author="Yuval Noah Harari" AND price = 18.99
+SELECT * FROM products WHERE author="Yuval Noah Harari" OR price = 18.99
+
+WHERE OPERATORS
+=  equality
+<> non-equality
+!= non-equality 
+<  less than
+<= less than or equal
+>  greater than
+>= greater than or equal
+!> not greater
+BETWEEN
+IS NULL
+
+AND
+OR
+
+LIKE
+SELECT * FROM products WHERE author LIKE "%Miller%" 
+% sign represents wildcard so in this case if we put "%Miller" it would 
+have worked too.
+
+AGGREGATE FUNCTIONS
+
+AVG()
+SELECT AVG(price) FROM products
+
+SUM()
+SELECT SUM(price) FROM products
+
+COUNT()
+MAX()
+MIN()
+
+CHALLENGE = SELECT *, price * quantity FROM products
+
+__________________________________________
+states.sql
+
+Q1 state drink of Maine?
+SELECT * FROM states WHERE state = "Maine"
+
+Q2 states having milk as their state drink
+SELECT * FROM states WHERE drink = "Milk"
+
+Q3 count the number of states having drink as milk?
+SELECT COUNT(drink) FROM states WHERE drink = "Milk"
+
+Q4 first state to initiate a state drink?
+SELECT * FROM states ORDER BY year LIMIT 1
+
+
+====================================================================================================
+INSERT
+INSERT INTO states (state, drink, year, image) values ("New Jersey", "Vodka", 2018, "vodka.jpg")
+
+====================================================================================================
+UPDATE
+UPDATE states SET drink = "Chocolate Oat Milk" WHERE state = "Delaware"
+
+or 
+
+UPDATE states 
+SET drink = "Chocolate Oat Milk" 
+WHERE state = "Delaware"
+
+====================================================================================================
+DELETE
+DELETE FROM states WHERE state = "Florida"
+
+Note - ids donot rearrange themselves so in this case id 7 is gone
+
+====================================================================================================
+CRUD
+C — Create
+R — Read
+U — Update
+D — Delete
+
+when someone says setup the CRUD it means can you setup the data base in case of blog for example
+so that it starts working, so comments, posts, etc
+
+=====================================================================
+automatically generates sql-
+INSERT INTO `states` (`id`, `state`, `drink`, `year`, `image`) VALUES (NULL, 'California', 'Wine', '1950', '');
+
+==========================================================================
+
+Modeling database is thinking through what goes in where etc and then making it in keynote, powerpoint, word, etc
+
+Collation generally used-
+utf8_general_ci
+utf8_unicode_ci
+
+tick AI 
+
+=================================================================================
+Here are some of the more common datatypes that you'll be using in your database whether it's MYSQL, SQL Server, or Oracle. 
+
+TINYINT(Size)
+A very small integer. Signed range is from -128 to 127. Unsigned range is from 0 to 255. "Size" specifies the maximum display width (which is 255)
+
+INT(Size)
+A medium integer. Signed range is from -2147483648 to 2147483647. Unsigned range is from 0 to 4294967295. "Size" specifies the maximum display width (which is 255).
+
+BIGINT(Size)
+A large integer. Signed range is from -9223372036854775808 to 9223372036854775807. Unsigned range is from 0 to 1844674407370955
+
+VARCHAR(256)
+A VARIABLE length string that can contain letters, numbers, and special characters. The length can be from 0 to 65535
+
+LONGTEXT
+A string with up to 4,294,967,295 characters
+
+DECIMAL(size, d)
+"Size" is the total number of digitals. "d" is the number of digits after the decimal point. The maximum number for size is 65. The maximum number for d is 30. The default value for size is 10. The default value for d is 0. For money, a suitable recommendation is to use DECIMAL(10, 2)
+
+DATETIME
+Used to set the date, Google instructions for more info on this!
+
+TIMESTAMP
+The current timestamp (in UNIX time) when the row was created.
+
+============================================================================
+JOIN
+SELECT * 
+FROM posts 
+JOIN users ON users.id = posts.post_author
+
+much cleaner -> 
+SELECT  users.user_nicename, posts.post_title 
+FROM posts 
+JOIN users ON users.id = posts.post_author
+LIMIT 1(optional)
+
+
+----------------------------------------
+AS ->
+SELECT  u.user_nicename, p.post_title 
+FROM posts AS p
+JOIN users AS u ON u.id = p.post_author
+LIMIT 1
+
+AS keyword to change name of table/ Changing View of database ->
+
+SELECT  u.user_nicename AS "Post Title", p.post_title, COUNT(*) as "Total Posts" 
+FROM posts AS p
+JOIN users AS u ON u.id = p.post_author
+LIMIT 1
+
+
+===========================================
+Assignment 1
+SELECT p.post_title, c.comment_content, c.comment_author
+FROM posts as p 
+JOIN comments as c ON c.id = p.post_author
+
+===============================================
+Assignment 2
+INSERT INTO transactions (user_id, product_id, quantity) VALUES (3, 4, 5)
+
+SELECT users.user_nicename, products.book_name 
+FROM `transactions`
+JOIN users ON transactions.user_id = users.ID
+JOIN products ON transactions.user_id = products.ID
+
+=================================================
+Assignment 3
+SELECT * FROM posts 
+LEFT JOIN comments ON posts.ID = comments.ID
+
+OR
+SELECT posts.post_title, comments.comment_content
+FROM posts 
+LEFT JOIN comments ON posts.ID = comments.post_id
+
+=============================================
+LEFT JOIN WHERE with IS NULL->
+
+SELECT posts.post_title, comments.comment_content
+FROM posts 
+LEFT JOIN comments ON comments.post_id = posts.id
+WHERE comments.comment_content IS NULL
+=============================================
+FULL OUTER JOIN->
+
+SELECT posts.post_title, comments.comment_content
+FROM posts 
+LEFT JOIN comments ON posts.ID = comments.post_id
+UNION
+SELECT posts.post_title, comments.comment_content
+FROM posts 
+RIGHT JOIN comments ON posts.ID = comments.post_id
+
+
+=======================================
+UNION->
+SELECT users.user_email
+FROM users
+UNION 
+SELECT comments.comment_author_email
+FROM comments
+
+===============================
+GROUP BY->
+
+SELECT posts.post_title, count(comments.ID) as "# of Comments" 
+FROM posts 
+LEFT JOIN comments ON posts.ID = comments.post_id
+Group BY posts.ID
+====================================================
+IN / SUBQUERIES->
+
+SELECT users.user_email FROM users 
+WHERE id IN (SELECT post_author FROM posts WHERE post_status = "draft")
+=================================================================
+IN->
+
+SELECT users.user_email 
+FROM users 
+WHERE id IN "caraadams@gmail.com, jamie@gmail.com"
